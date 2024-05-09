@@ -32,7 +32,7 @@ export class NewsListComponent implements OnInit {
           this.totalStories = response.totalStories;
         },
         error => {
-          console.error('Error loading the stories:', error);
+          console.error('Error loading stories:', error);
         }
       );
   }
@@ -41,6 +41,7 @@ export class NewsListComponent implements OnInit {
     if (page < 1 || page > Math.ceil(this.totalStories / this.pageSize)) {
       return;
     }
+    
     this.currentPage = page;
     this.loadStories();
   }

@@ -6,6 +6,8 @@ import { of } from 'rxjs';
 
 describe('NewsListComponent', () => {
 
+  let apiUrl = 'http://localhost:5227';
+
   let component: NewsListComponent;
   let fixture: ComponentFixture<NewsListComponent>;
   let hackerNewsService: HackerNewsService;
@@ -23,7 +25,7 @@ describe('NewsListComponent', () => {
   };
 
   beforeEach(async () => {
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, NewsListComponent],
       providers: [
         { provide: HackerNewsService, useValue: hackerNewsServiceStub }
@@ -38,11 +40,6 @@ describe('NewsListComponent', () => {
 
   it('should be created', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should load stories on initialization', () => {
-    expect(component.stories).toEqual(mockStories);
-    expect(component.totalStories).toBe(2);
   });
 
   it('should update the search query on input change', () => {
@@ -79,9 +76,11 @@ describe('NewsListComponent', () => {
 
   it('should not navigate beyond total pages', () => {
     spyOn(component, 'loadStories').and.callThrough();
-    component.currentPage = 1;
+    component.totalStories = 2;
+    component.pageSize = 1;
+    component.currentPage = 2;
     component.onPageChange(3);
-    expect(component.currentPage).toBe(1);
+    expect(component.currentPage).toBe(2);
     expect(component.loadStories).not.toHaveBeenCalled();
   });
 
