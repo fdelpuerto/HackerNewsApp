@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, catchError, finalize, throwError } from 'rxjs';
 import { LoadingService } from './loading.service';
+import { environment } from '../environments/environment';
 
 export interface Story {
   id: number;
@@ -19,7 +20,8 @@ export interface HackerNewsResponse {
   providedIn: 'root'
 })
 export class HackerNewsService {
-  private apiUrl = 'http://localhost:5227';
+
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient, private loadingService: LoadingService) { }
 
@@ -34,7 +36,7 @@ export class HackerNewsService {
 
     this.loadingService.show();
 
-    return this.http.get<HackerNewsResponse>(`${this.apiUrl}/Stories`, { params })
+    return this.http.get<HackerNewsResponse>(`${this.apiUrl}`, { params })
     .pipe(
       catchError(this.handleError),
       finalize(() => this.loadingService.hide())

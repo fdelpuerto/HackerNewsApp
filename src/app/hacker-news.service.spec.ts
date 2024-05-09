@@ -42,7 +42,7 @@ describe('HackerNewsService', () => {
       expect(response).toEqual(mockResponse);
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/Stories?pageNumber=1&pageSize=10&title=Test`);
+    const req = httpMock.expectOne(`${apiUrl}?pageNumber=1&pageSize=10&title=Test`);
     expect(req.request.method).toBe('GET');
     req.flush(mockResponse);
   });
@@ -55,7 +55,7 @@ describe('HackerNewsService', () => {
       (error) => expect(error).toBe(errorMessage)
     );
 
-    const req = httpMock.expectOne(`${apiUrl}/Stories?pageNumber=1&pageSize=10`);
+    const req = httpMock.expectOne(`${apiUrl}?pageNumber=1&pageSize=10`);
     expect(req.request.method).toBe('GET');
     req.flush('error', { status: 500, statusText: 'Server Error' });
   });
