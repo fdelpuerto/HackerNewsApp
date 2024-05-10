@@ -1,22 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, signal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HackerNewsService, Story } from '../hacker-news.service';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-news-list',
   standalone: true,
-  imports: [CommonModule, HttpClientModule],
+  imports: [CommonModule, HttpClientModule, FormsModule],
   templateUrl: './news-list.component.html',
   styleUrl: './news-list.component.css'
 })
 export class NewsListComponent implements OnInit {
 
-  stories: Story[] = [];
-  totalStories: number = 0;
-  currentPage: number = 1;
-  pageSize: number = 10;
-  searchQuery: string = '';
+  stories = signal<Story[]>([]);
+  totalStories = signal(0);
+  currentPage = signal(1);
+  pageSize = 10;
+  searchQuery = signal('');
+
+  totalPages = computed(() => Math.ceil(this.totalStories() / this.pageSize));
 
   constructor(private hackerNewsService: HackerNewsService) { }
 
@@ -25,11 +28,11 @@ export class NewsListComponent implements OnInit {
   }
 
   loadStories(): void {
-    this.hackerNewsService.getStories(this.currentPage, this.pageSize, this.searchQuery)
+    this.hackerNewsService.getStories(this.currentPage(), this.pageSize, this.searchQuery())
       .subscribe(
         response => {
-          this.stories = response.stories;
-          this.totalStories = response.totalStories;
+          this.stories.set(response.stories);
+          this.totalStories.set(response.totalStories);
         },
         error => {
           console.error('Error loading stories:', error);
@@ -38,25 +41,20 @@ export class NewsListComponent implements OnInit {
   }
 
   onPageChange(page: number): void {
-    if (page < 1 || page > Math.ceil(this.totalStories / this.pageSize)) {
+    if (page < 1 || page > this.totalPages()) {
       return;
     }
     
-    this.currentPage = page;
+    this.currentPage.set(page);
     this.loadStories();
   }
 
-  onSearchQueryChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.searchQuery = input.value ? input.value.trim() : '';
+  onSearchQueryChange(value: string): void {
+    this.searchQuery.set(value.trim());
   }
 
   onSearch(): void {
-    this.currentPage = 1;
+    this.currentPage.set(1);
     this.loadStories();
-  }
-
-  totalPages(): number {
-    return Math.ceil(this.totalStories / this.pageSize);
   }
 }

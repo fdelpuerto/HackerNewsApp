@@ -1,9 +1,8 @@
 <div>
-    <input type="text" placeholder="Search by title" (input)="onSearchQueryChange($event)"
-        (keyup.enter)="onSearch()" />
+    <input [(ngModel)]="searchQuery" type="text" placeholder="Search by title" />
     <button (click)="onSearch()">Search</button>
     <ul>
-        <li *ngFor="let story of stories">
+        <li *ngFor="let story of stories()">
             <ng-container *ngIf="story.url; else noUrl">
                 <a [href]="story.url" target="_blank">{{story.title}}</a>
             </ng-container>
@@ -13,8 +12,8 @@
         </li>
     </ul>
     <div>
-        <button [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)">Previous</button>
-        <span>Page {{currentPage}} of {{totalPages()}}</span>
-        <button [disabled]="currentPage >= totalPages()" (click)="onPageChange(currentPage + 1)">Next</button>
+        <button [disabled]="currentPage() === 1" (click)="onPageChange(currentPage() - 1)">Previous</button>
+        <span>Page {{currentPage()}} of {{totalPages()}}</span>
+        <button [disabled]="currentPage() >= totalPages()" (click)="onPageChange(currentPage() + 1)">Next</button>
     </div>
 </div>
